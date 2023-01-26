@@ -13,6 +13,7 @@ GameProcess::GameProcess()
 
 GameProcess::~GameProcess()
 {
+    delete _gameProcess;
 }
 
 void GameProcess::startGame()
