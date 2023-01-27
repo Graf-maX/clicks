@@ -18,20 +18,17 @@ GameProcess::~GameProcess()
 
 void GameProcess::startGame()
 {
-    _gameData->setGameStatus(GameDataManager::GAME_START);
-    if (_gameProcess != nullptr)
-        return;
+    if (_gameData->gameStatus() == GameDataManager::GAME_START)
+        stopGame();
 
+    _gameData->setGameStatus(GameDataManager::GAME_START);
     _gameProcess = new std::thread(loopGameProcess, _gameData.get(), _roundPeriodMilsec, _waitPeriodMilsec);
-    _gameProcess->detach();
 }
 
 void GameProcess::stopGame()
 {
-    delete _gameProcess;
-    _gameProcess = nullptr;
-
     _gameData->setGameStatus(GameDataManager::GAME_STOP);
+    _gameProcess->join();
 }
 
 void GameProcess::mouseClicked()
@@ -50,6 +47,9 @@ void GameProcess::loopGameProcess(GameDataManager* gameData, int roundPeriod, in
     {
         gameData->setRoundStatus(GameDataManager::ROUND_START);
         std::this_thread::sleep_for(std::chrono::milliseconds(roundPeriod));
+
+        if (gameData->gameStatus() == GameDataManager::GAME_STOP)
+            break;
 
         gameData->setRoundStatus(GameDataManager::ROUND_STOP);
         std::this_thread::sleep_for(std::chrono::milliseconds(waitPeriod));
