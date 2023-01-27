@@ -1,7 +1,6 @@
 #include "GameProcess.h"
 
 #include <iostream>
-
 #include <functional>
 
 #include "GameDataManager.h"
@@ -13,13 +12,13 @@ GameProcess::GameProcess()
 
 GameProcess::~GameProcess()
 {
-    delete _gameProcess;
+    stopGame();
 }
 
 void GameProcess::startGame()
 {
     if (_gameData->gameStatus() == GameDataManager::GAME_START)
-        stopGame();
+       stopGame();
 
     _gameData->setGameStatus(GameDataManager::GAME_START);
     _gameProcess = new std::thread(loopGameProcess, _gameData.get(), _roundPeriodMilsec, _waitPeriodMilsec);
@@ -28,7 +27,12 @@ void GameProcess::startGame()
 void GameProcess::stopGame()
 {
     _gameData->setGameStatus(GameDataManager::GAME_STOP);
-    _gameProcess->join();
+    if (_gameProcess != nullptr)
+    {
+        _gameProcess->join();
+        delete  _gameProcess;
+        _gameProcess = nullptr;
+    }
 }
 
 void GameProcess::mouseClicked()
@@ -43,6 +47,9 @@ const GameDataManager* GameProcess::gameData() const
 
 void GameProcess::loopGameProcess(GameDataManager* gameData, int roundPeriod, int waitPeriod)
 {
+    gameData->setRoundStatus(GameDataManager::ROUND_PRESTART);
+    std::this_thread::sleep_for(std::chrono::milliseconds(waitPeriod));
+
     while (gameData->gameStatus() != GameDataManager::GAME_STOP)
     {
         gameData->setRoundStatus(GameDataManager::ROUND_START);

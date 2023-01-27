@@ -55,15 +55,11 @@ GameDataManager::GameStatus GameDataManager::gameStatus() const
 
 void GameDataManager::setGameStatus(GameStatus status)
 {
-    if (_gameStatus == GAME_STOP && _gameStatus == status)
-        return;
-
     _gameStatus = status;
     if (_gameStatus == GAME_START)
-    {
         resetData();
-        emit displayedDataChanged();
-    }
+
+    emit displayedDataChanged();
 }
 
 GameDataManager::RoundStatus GameDataManager::roundStatus() const
@@ -77,17 +73,23 @@ void GameDataManager::setRoundStatus(RoundStatus status)
         return;
 
     _roundStatus = status;
-    if (_roundStatus == ROUND_START)
-    {
-        setLastRoundResult(RESULT_UNDEFINED);
-        srand(time(NULL));
-        _requiredClicks = _minCount + rand() % (_maxCount - _minCount + 1);
-    }
-    else
-    {
-        setLastRoundResult(_requiredClicks == _currentClicks ? RESULT_SUCCESS : RESULT_FAIL);
-        _requiredClicks = 0;
-        _currentClicks  = 0;
+    switch (_roundStatus) {
+        case ROUND_START:
+        {
+            setLastRoundResult(RESULT_UNDEFINED);
+            srand(time(NULL));
+            _requiredClicks = _minCount + rand() % (_maxCount - _minCount + 1);
+            break;
+        }
+        case ROUND_STOP:
+        {
+            setLastRoundResult(_requiredClicks == _currentClicks ? RESULT_SUCCESS : RESULT_FAIL);
+            _requiredClicks = 0;
+            _currentClicks  = 0;
+            break;
+        }
+        default:
+            break;
     }
 
     emit displayedDataChanged();

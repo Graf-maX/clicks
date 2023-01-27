@@ -15,6 +15,7 @@ public:
 
     enum RoundStatus
     {
+        ROUND_PRESTART,
         ROUND_START,
         ROUND_STOP
     };
@@ -64,7 +65,7 @@ private:
     GameStatus _gameStatus = GAME_STOP;
 
     /// Cтатус раунда
-    RoundStatus _roundStatus     = ROUND_STOP;
+    RoundStatus _roundStatus     = ROUND_PRESTART;
     RoundResult _lastRoundResult = RESULT_UNDEFINED;
 
     /// Границы формируюемых значений количества требуемых кликов

@@ -32,6 +32,8 @@ void MainWindow::setCount(int rightCount, int wrongCount)
 
 void MainWindow::closeEvent(QCloseEvent* /*event*/)
 {
+    emit stopButtonClicked(true);
+
     QMessageBox messageBox;
     messageBox.setText(tr("Приходите еще."));
     messageBox.setButtonText(QMessageBox::Ok, tr("Обязательно приду"));

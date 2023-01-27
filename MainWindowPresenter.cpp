@@ -42,10 +42,18 @@ void MainWindowPresenter::onMouseClicked()
 
 void MainWindowPresenter::onDisplayedDataChanged()
 {
-    _view->setCount(_gameData->correctAnswers(), _gameData->wrongAnswers());
     if (_gameData->gameStatus() == GameDataManager::GAME_STOP)
+    {
+        _view->setNumber({});
         return;
+    }
+    else if (_gameData->roundStatus() == GameDataManager::ROUND_PRESTART)
+    {
+        _view->setNumber(tr("Начали!"));
+        return;
+    }
 
+    _view->setCount(_gameData->correctAnswers(), _gameData->wrongAnswers());
     const QString textLable = _gameData->roundStatus() == GameDataManager::ROUND_START
                     ? QString::number(_gameData->requiredClicks())
                     : _gameData->lastRoundResult() == GameDataManager::RESULT_SUCCESS
